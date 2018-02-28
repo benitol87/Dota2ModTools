@@ -1,0 +1,4 @@
+"key" { //comment ok
+	"key" { / /bad comment 
+		"k" "v
+	}	
