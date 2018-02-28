@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 
     try {
         std::vector<PairElement> fileContent = parser.parseFile(
-            "../Dota2ParserConsole/snippets/simple1.txt");
+            "../snippets/simple1.txt");
 
         std::cout << "START" << std::endl;
         for(auto& pair: fileContent) {

@@ -1,3 +1,5 @@
+#include <QtGui>
+
 #if defined TOOLS_LIBRARY
  #define TOOLS_API Q_DECL_EXPORT
 #else
