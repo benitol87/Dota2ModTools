@@ -17,8 +17,17 @@ namespace dota2 {
         class TOOLS_API ValueElement
         {
         public:
+            /**
+             * @brief toString
+             * @param indent
+             * @return
+             */
             virtual std::string toString(const std::string& indent="") const = 0;
+
         protected:
+            /**
+             * @brief ValueElement
+             */
             ValueElement() {}
         };
 

@@ -12,7 +12,6 @@ namespace dota2 {
 
         std::vector<PairElement> AbilityParser::parseFile(std::string filename)
         {
-            //std::cout << "DEBUG: parseFile" << std::endl;
             std::vector<PairElement> result;
             this->file = new std::ifstream(filename);
 
@@ -42,7 +41,6 @@ namespace dota2 {
             delete this->file;
             this->file = nullptr;
 
-            //std::cout << "DEBUG: parseFile end" << std::endl;
             return result;
         }
 
@@ -64,32 +62,33 @@ namespace dota2 {
 
         PairElement* AbilityParser::parsePairElement()
         {
-            //std::cout << "DEBUG: parsePair" << std::endl;
             std::string key("");
             ValueElement* value = nullptr;
 
+            // Parse the key
             key = this->parseString();
+
+            // Parse the value
             value = this->parseValue();
 
             PairElement* pair = new PairElement(key, *value);
-            //std::cout << "DEBUG: parsePair end" << std::endl;
             return pair;
         }
 
         std::string AbilityParser::parseString()
         {
-            //std::cout << "DEBUG: parseString" << std::endl;
             std::string result("");
 
+            // Must start with a "
             if (this->lastCharRead != '"') {
                 this->throwParsingException("Expected \" ");
             }
 
+            // Take every following char until the next "
             this->readChar();
-
             while(this->lastCharRead!='"') {
+                // Must end with a "
                 if (this->file->eof()) {
-                //if (this->lastCharRead==EOF) {
                     this->throwParsingException("Unexpected end of file, missing \"");
                 }
 
@@ -98,7 +97,7 @@ namespace dota2 {
                 this->readChar();
             }
 
-            // Skip all spaces/comments
+            // Skip all following spaces/comments
             this->nextNonSpaceChar();
 
             return result;
@@ -106,10 +105,10 @@ namespace dota2 {
 
         ValueElement* AbilityParser::parseValue()
         {
-            //std::cout << "DEBUG: parseValue" << std::endl;
             ValueElement* result = nullptr;
 
             //TODO memory leak
+            // Check first character of this token to see what must be parsed
             if (this->lastCharRead == '"') {
                 std::string str = this->parseString();
                 result = new StringElement(str);
@@ -119,39 +118,43 @@ namespace dota2 {
                 this->throwParsingException(std::string("Unexpected character: ") + this->lastCharRead);
             }
 
-            //std::cout << "DEBUG: parseValue end" << std::endl;
             return result;
         }
 
         ObjectElement* AbilityParser::parseObject()
         {
-            //std::cout << "DEBUG: parseObject" << std::endl;
             ObjectElement* result = new ObjectElement();
 
+            // Must start with a {
             if (this->lastCharRead != '{') {
                 this->throwParsingException("Expected {");
             }
             this->nextNonSpaceChar();
 
+            // Parse every pair until a } is reached
             while (this->lastCharRead != '}') {
                 PairElement* pair = this->parsePairElement();
                 result->addPair(*pair);
-                delete pair;
+                delete pair; // delete it since a copy is made
 
+                // Must end with a }
                 if(this->file->eof()) {
                     this->throwParsingException("Unexpected end of file, missing }");
                 }
             }
 
+            // Read the first character of the next token
             this->nextNonSpaceChar();
 
-            //std::cout << "DEBUG: parseObject end" << std::endl;
             return result;
         }
 
         void AbilityParser::nextNonSpaceChar()
         {
+            // Read a character
             readChar();
+
+            // Skip all spaces and comments
             while( (this->lastCharRead==' ' || this->lastCharRead=='\t' ||
                   this->lastCharRead=='\n' || this->lastCharRead=='/')
                     && !this->file->eof()) {
@@ -165,18 +168,15 @@ namespace dota2 {
 
         void AbilityParser::readChar()
         {
+            // Read a character in the file open
             this->file->read(&(this->lastCharRead), 1);
-            //(*this->file) >> this->lastCharRead;
-            //std::cout << "DEBUG: read " << this->lastCharRead << " "
-            //          << (unsigned short) this->lastCharRead << " "
-            //          << this->file->eof() << std::endl;
 
             if(this->file->eof()) {
                 return;
             }
 
+            // Update the line and column variables for error messages
             this->columnIndex++;
-
             if (this->lastCharRead=='\n') {
                 this->lineIndex++;
                 this->columnIndex = 0;
