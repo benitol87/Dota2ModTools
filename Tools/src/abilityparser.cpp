@@ -30,7 +30,6 @@ namespace dota2 {
 
             // Parse a list of pairs key/value
             while(!this->file->eof()) {
-            //while(this->lastCharRead != EOF) {
                 PairElement* elem(this->parsePairElement());
                 result.push_back(*elem);
                 delete elem;
@@ -69,6 +68,7 @@ namespace dota2 {
             key = this->parseString();
 
             // Parse the value
+            // TODO memory leak
             value = this->parseValue();
 
             PairElement* pair = new PairElement(key, *value);

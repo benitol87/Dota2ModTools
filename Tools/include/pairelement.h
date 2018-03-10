@@ -8,12 +8,18 @@ namespace dota2 {
 
         /**
          * @brief The PairElement class
+         * Class containing a pair string/value
+         *
+         * @see StringElement, ValueElement
          */
         class TOOLS_API PairElement
         {
         public:
             /**
              * @brief PairElement
+             * Constructor
+             * Sets the values of the pair.
+             *
              * @param key
              * @param value
              */
@@ -21,20 +27,23 @@ namespace dota2 {
 
             /**
              * @brief toString
-             * @param indent
-             * @return
+             * Converts this pair into a string.
+             *
+             * @param indent string to add to the result after each line break
+             * @return stringified value
              */
             std::string toString(const std::string& indent="") const;
 
             /**
              * @brief getKey
-             * @return
+             *
+             * @return a reference to this pair's key (not a copy)
              */
             std::string& getKey() {return this->key;}
 
             /**
              * @brief getValue
-             * @return
+             * @return a reference to this pair's value (not a copy)
              */
             ValueElement& getValue() {return *(this->value);}
 
